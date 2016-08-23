@@ -9,7 +9,14 @@ public class QuakeFlavor {
     private String location;
     private long date;
     private String url;
+    private String topic;
 
+    //For main menu list view
+    public QuakeFlavor(String topic){
+        this.topic = topic;
+    }
+
+    //For json result content
     public QuakeFlavor(double magnitude, String location, long date, String url){
         this.magnitude = magnitude;
         this.location = location;
@@ -32,5 +39,7 @@ public class QuakeFlavor {
     public String getURL(){
         return url;
     }
+
+    public String getTopic(){ return topic; }
 
 }

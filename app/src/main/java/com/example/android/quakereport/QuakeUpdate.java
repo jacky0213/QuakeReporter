@@ -40,7 +40,7 @@ public class QuakeUpdate {
 
         //Create JSON request object
         //JsonObjectRequest (int Method, String URL, JSONObject content, OnResponseReceive, OnErrorReceive)
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, serverURL, "0",
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, serverURL,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
