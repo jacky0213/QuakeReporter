@@ -15,20 +15,22 @@ public class QuakeUtils {
 
     public static final String TAG = "QuakeUtils";
 
-    private QuakeUtils() {
-    }
+    private QuakeUtils() { }
 
     public static ArrayList<QuakeFlavor> extractEarthquakes(String result) {
 
         ArrayList<QuakeFlavor> quakeFlavor = new ArrayList<>();
 
-
         try{
 
             JSONObject root = new JSONObject(result);
             JSONArray featuresArr = root.getJSONArray("features");
-            Log.i(TAG, String.valueOf(featuresArr.length()));
-            for (int i=0; i<featuresArr.length(); i++){
+
+            int length = featuresArr.length();
+            Log.i(TAG, String.valueOf("Earthquake record received: " + length));
+            if(length >= 100){ length = 100; }
+
+            for (int i=0; i<length; i++){
 
                 JSONObject featureObj = featuresArr.getJSONObject(i);
                 JSONObject propertiesObj = featureObj.getJSONObject("properties");
@@ -45,7 +47,7 @@ public class QuakeUtils {
                 //URL attribute
                 String url = propertiesObj.getString("url");
 
-                Log.i(TAG, String.valueOf(magnitude) + " / " + place + " / " + String.valueOf(time) + " / " + url);
+                Log.i(TAG, "(" + i + ") " + String.valueOf(magnitude) + " / " + place + " / " + String.valueOf(time) + " / " + url);
                 quakeFlavor.add(new QuakeFlavor(magnitude, place, time, url));
             }
 

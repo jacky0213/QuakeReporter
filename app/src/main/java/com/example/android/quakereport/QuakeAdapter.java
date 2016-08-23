@@ -35,6 +35,7 @@ public class QuakeAdapter extends ArrayAdapter<QuakeFlavor>{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if(position >= 100){ return null; }
 
         // Check if the existing view is being reused, otherwise inflate the view
         View listItemView = convertView;

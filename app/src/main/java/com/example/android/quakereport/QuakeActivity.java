@@ -76,7 +76,6 @@ public class QuakeActivity extends AppCompatActivity {
      * @return true = a new fragment was instantiated, false = current fragment has been reused
      */
     public boolean navigateToFragment (Class fragmentClass, Bundle args){
-
         Fragment currentFragment = getFragmentManager().findFragmentById(R.id.container);
         if (currentFragment != null && currentFragment.getClass().equals(fragmentClass)) {
             return false;
@@ -99,6 +98,7 @@ public class QuakeActivity extends AppCompatActivity {
             //replace fragment in container
             String Tag = fragmentClass.toString();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.animator.zoom_enter, R.animator.zoom_exit, R.animator.zoom_pop_enter, R.animator.zoom_pop_exit);
             transaction.replace(R.id.container, fragment);
             transaction.addToBackStack(null);
             transaction.commit();
@@ -116,6 +116,4 @@ public class QuakeActivity extends AppCompatActivity {
             fm.popBackStack();
         }
     }
-
-
 }
