@@ -38,8 +38,6 @@ public class QuakeFragment extends Fragment{
 
         ArrayList<QuakeFlavor> quakeFlavor = QuakeUtils.extractEarthquakes(features.getFeatures());
         quakeAdapter = new QuakeAdapter(_activity, quakeFlavor);
-
-
         Log.v(TAG, getArguments().getString("JSON_RESULT"));
 
         // Get a reference to the ListView, and attach the adapter to the listView.

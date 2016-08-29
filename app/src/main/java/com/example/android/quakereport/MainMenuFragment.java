@@ -7,8 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
 
 /**
  * Created by Jacky on 2016/8/23.
@@ -20,18 +25,15 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
     public static final String TAG_PAST_HOUR = "Past Hour";
     public static final String TAG_PAST_DAY = "Past Day";
     public static final String TAG_PAST_WEEK = "Past Week";
-    public static final String TAG_PAST_MONTH = "Past Month";
+    public static final String[] TAG_PAST_Arr = {TAG_PAST_HOUR, TAG_PAST_DAY, TAG_PAST_WEEK};
 
-    public static final String URL_PAST_HOUR = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
-    public static final String URL_PAST_DAY = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-    public static final String URL_PAST_WEEK = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-    public static final String URL_PAST_MONTH = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
+    private QuakeActivity _activity;
+    private ArrayList<QuakeFlavor> quakeFlavor;
+    private MainMenuAdapter mainMenuAdapter;
+    private int menuItemNum = TAG_PAST_Arr.length;
+    private Boolean readyBool = false;
 
-    QuakeActivity _activity;
-    ArrayList<QuakeFlavor> quakeFlavor;
-    MainMenuAdapter mainMenuAdapter;
-    String[] topic = {URL_PAST_HOUR, URL_PAST_DAY, URL_PAST_WEEK, URL_PAST_MONTH};
-    int counter = topic.length;
+    private ProgressBar progress;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.menu_adapter, container, false);
@@ -40,13 +42,18 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
 
         //init fields
         _activity = (QuakeActivity) getActivity();
+        progress = (ProgressBar) rootView.findViewById(R.id.progress);
 
         //init UI
         quakeFlavor = new ArrayList<QuakeFlavor>();
-        quakeFlavor.add(new QuakeFlavor(", " + TAG_PAST_HOUR, 1472035185380L , 6));
-        quakeFlavor.add(new QuakeFlavor(", " + TAG_PAST_DAY, 1472037876000L , 199));
-        quakeFlavor.add(new QuakeFlavor(", " + TAG_PAST_WEEK, 1472037895000L , 1585));
-        quakeFlavor.add(new QuakeFlavor(", " + TAG_PAST_MONTH, 1472037199000L , 8637));
+        for(int i = 0; i < menuItemNum; i++){
+            try {
+                String result = getArguments().getString(TAG_PAST_Arr[i]);
+                extractJSON(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         //Callback
         mainMenuAdapter = new MainMenuAdapter(_activity, quakeFlavor);
@@ -67,54 +74,20 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
             _activity.navigateToFragment(QuakeFragment.class, bundle);
         }
     }
-   /*
-    public void addListItem(String url) throws JSONException {
-        QuakeUpdate qu = new QuakeUpdate(url);
-        qu.request(_activity, new QuakeUpdate.VolleyCallback() {
-            @Override
-            public void onSuccess(String result) throws JSONException {
-                try {
-                    extractJSON(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
-    }
-
-
-    public void extractJSON (String result) throws IOException {
-        JsonReader reader = new JsonReader(new StringReader(result));
+    public void extractJSON (String result) throws JSONException {
+        JSONObject reader = new JSONObject(result).getJSONObject("metadata");
         long time = 0;
         int count = 0;
         String title = null;
 
-        reader.beginObject();
-        while(reader.hasNext()){
-            String name = reader.nextName();
-            if(name.equals("metedata")){
-                while(reader.hasNext()){
-                    if(name.equals("generated")){
-                        time = reader.nextLong();
-                    } else if (name.equals("count")){
-                        count = reader.nextInt();
-                    } else if (name.equals("title")) {
-                        title = reader.nextString();
-                    } else {
-                        reader.skipValue();
-                    }
-                }
-            } else {
-                reader.skipValue();
-            }
+        title = reader.getString("title");
+        time = reader.getLong("generated");
+        count = reader.getInt("count");
 
-        }
         Log.i(TAG, title + " / " + time + " / " + count);
         quakeFlavor.add(new QuakeFlavor(title, time, count));
-        counter --;
     }
-    */
 
 
 

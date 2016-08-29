@@ -30,12 +30,10 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor>  {
     public static final String TAG_PAST_HOUR = "Past Hour";
     public static final String TAG_PAST_DAY = "Past Day";
     public static final String TAG_PAST_WEEK = "Past Week";
-    public static final String TAG_PAST_MONTH = "Past Month";
 
     public static final String URL_PAST_HOUR = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
     public static final String URL_PAST_DAY = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
     public static final String URL_PAST_WEEK = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-    public static final String URL_PAST_MONTH = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
     public MainMenuAdapter(Context context, ArrayList<QuakeFlavor> quakeFlavor) {
         super(context, 0, quakeFlavor);
@@ -54,7 +52,6 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor>  {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         // Check if the existing view is being reused, otherwise inflate the view
         View listItemView = convertView;
         if (listItemView == null) {
@@ -75,9 +72,9 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor>  {
             public void onClick(final View v) {
                 v.setEnabled(false);
 
-                QuakeUpdate qu = new QuakeUpdate(url);
+                QuakeUpdate qu = new QuakeUpdate();
                 try {
-                    qu.request(context, new QuakeUpdate.VolleyCallback() {
+                    qu.request(context, url, new QuakeUpdate.VolleyCallback() {
                         @Override
                         public void  onSuccess(String result) throws JSONException {
                             Log.i(TAG, result);
@@ -121,9 +118,6 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor>  {
                 break;
             case TAG_PAST_WEEK:
                 url = URL_PAST_WEEK;
-                break;
-            case TAG_PAST_MONTH:
-                url = URL_PAST_MONTH;
                 break;
         }
         return url;
