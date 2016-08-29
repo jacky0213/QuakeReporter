@@ -2,6 +2,8 @@ package com.example.android.quakereport;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +13,19 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Jacky on 2016/8/23.
  */
-public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor> {
+public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor>  {
 
     public static final String TAG = "MainMenuAdapter";
     Context context;
     Activity activity;
-    private TextView topicTv;
+    private TextView topicTv, timeTv, recordNumTv;
 
     public static final String TAG_PAST_HOUR = "Past Hour";
     public static final String TAG_PAST_DAY = "Past Day";
@@ -58,15 +62,18 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor> {
                     R.layout.menu_item, parent, false);
         }
 
-
         final QuakeFlavor currentQuakeFlavor = getItem(position);
+        String topic = currentQuakeFlavor.getTopic();
+        String[] topicArr = topic.split(", ");
+        topic = topicArr[1];
+        final String url = getURL(topic);
+
+        Log.i(TAG, "The URL of " + topic + " is " + url);
 
         listItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 v.setEnabled(false);
-                String url = getURL(currentQuakeFlavor.getTopic());
-                Log.i(TAG, "The URL of " + currentQuakeFlavor.getTopic() + " is " + url);
 
                 QuakeUpdate qu = new QuakeUpdate(url);
                 try {
@@ -87,8 +94,18 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor> {
         });
 
         topicTv = (TextView) listItemView.findViewById(R.id.topicTv);
-        topicTv.setText(currentQuakeFlavor.getTopic());
+        topicTv.setText(topic);
 
+        timeTv = (TextView) listItemView.findViewById(R.id.timeTv);
+        String dateToDisplay = formatDate(currentQuakeFlavor.getDate());
+        String timeToDisplay = formatTime(currentQuakeFlavor.getDate());
+        timeTv.setText(dateToDisplay + " / " + timeToDisplay);
+
+        recordNumTv = (TextView) listItemView.findViewById(R.id.recordNumTv);
+        recordNumTv.setText(String.valueOf(currentQuakeFlavor.getRecordNum()));
+
+        GradientDrawable circle = (GradientDrawable) recordNumTv.getBackground();
+        circle.setColor(ContextCompat.getColor(getContext(), R.color.magnitude1));
         return listItemView;
     }
 
@@ -112,5 +129,14 @@ public class MainMenuAdapter extends ArrayAdapter<QuakeFlavor> {
         return url;
     }
 
-
+    private static String formatDate(long date){
+        Date dateObj = new Date(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        return dateFormat.format(dateObj);
+    }
+    private static String formatTime(long date){
+        Date dateObj = new Date(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        return dateFormat.format(dateObj);
+    }
 }

@@ -1,28 +1,48 @@
 package com.example.android.quakereport;
 
+import android.util.JsonReader;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.android.quakereport.json.JSON_Features;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Created by Jacky on 2016/8/22.
  */
-public class QuakeUtils {
+public class QuakeUtils{
 
     public static final String TAG = "QuakeUtils";
 
-    private QuakeUtils() { }
+    public QuakeUtils() { }
 
-    public static ArrayList<QuakeFlavor> extractEarthquakes(String result) {
+    public static ArrayList<QuakeFlavor> extractEarthquakes(final List<JSON_Features.FeaturesBean> featureRecord) {
 
-        ArrayList<QuakeFlavor> quakeFlavor = new ArrayList<>();
+        final ArrayList<QuakeFlavor> quakeFlavor = new ArrayList<>();
 
-        try{
+        int size = featureRecord.size();
+        if(size >= 100){
+            size = 100;
+        }
+        for(int i = 0; i < size; i++){
+            JSON_Features.FeaturesBean item = featureRecord.get(i);
+            double mag = item.getProperties().getMag();
+            String place = item.getProperties().getPlace();
+            long time = item.getProperties().getTime();
+            String url = item.getProperties().getUrl();
+            Log.i(TAG, "(" + i + ") " + String.valueOf(mag) + " / " + place + " / " + String.valueOf(time) + " / " + url);
+            quakeFlavor.add(new QuakeFlavor(mag, place, time, url));
 
+        }
+
+            /*
+             quakeFlavor.add(new QuakeFlavor(magnitude, place, time, url));
+            Log.i(TAG, "(" +""+ ") " + String.valueOf(magnitude) + " / " + place + " / " + String.valueOf(time) + " / " + url);
+            /*
             JSONObject root = new JSONObject(result);
             JSONArray featuresArr = root.getJSONArray("features");
 
@@ -49,15 +69,47 @@ public class QuakeUtils {
 
                 Log.i(TAG, "(" + i + ") " + String.valueOf(magnitude) + " / " + place + " / " + String.valueOf(time) + " / " + url);
                 quakeFlavor.add(new QuakeFlavor(magnitude, place, time, url));
-            }
 
-        } catch (JSONException e){
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
-        }
+            }
+            */
 
         return quakeFlavor;
     }
 
+    public static ArrayList<QuakeFlavor> extractEarthquakes(String result) throws IOException {
+
+        final ArrayList<QuakeFlavor> quakeFlavor = new ArrayList<>();
+
+        JsonReader reader = new JsonReader(new StringReader(result));
+        long time = 0;
+        int count = 0;
+        String title = null;
+
+        reader.beginObject();
+        while(reader.hasNext()){
+            String name = reader.nextName();
+            if(name.equals("metedata")){
+                while(reader.hasNext()){
+                    if(name.equals("generated")){
+                        time = reader.nextLong();
+                    } else if (name.equals("count")){
+                        count = reader.nextInt();
+                    } else if (name.equals("count")) {
+                        title = reader.nextString();
+                    } else {
+                        reader.skipValue();
+                    }
+                }
+            } else {
+                reader.skipValue();
+            }
+
+        }
+        Log.i(TAG, title + " / " + time + " / " + count);
+
+        reader.endObject();
+        return quakeFlavor;
+    }
 
 
 }

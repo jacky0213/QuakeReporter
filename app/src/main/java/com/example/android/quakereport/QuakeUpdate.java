@@ -28,6 +28,8 @@ public class QuakeUpdate {
             this.serverURL = serverURL;
     }
 
+
+
     //Interface for pass value to UI
     public interface VolleyCallback{
         void onSuccess(String result) throws JSONException;

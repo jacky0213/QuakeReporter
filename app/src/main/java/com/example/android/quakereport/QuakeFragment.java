@@ -1,12 +1,15 @@
 package com.example.android.quakereport;
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.example.android.quakereport.json.JSON_Features;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -17,6 +20,9 @@ public class QuakeFragment extends Fragment{
 
     public static final String TAG = "QuakeFragment";
     QuakeActivity _activity;
+    JSON_Features features;
+    Gson gson;
+    QuakeAdapter quakeAdapter;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.list_adapter, container, false);
@@ -25,9 +31,14 @@ public class QuakeFragment extends Fragment{
         //init fields
         _activity = (QuakeActivity) getActivity();
 
-        //init UI
-        ArrayList<QuakeFlavor> quakeFlavor = QuakeUtils.extractEarthquakes(getArguments().getString("JSON_RESULT"));
-        QuakeAdapter quakeAdapter = new QuakeAdapter(_activity, quakeFlavor);
+
+        String result = getArguments().getString("JSON_RESULT");
+        gson = new Gson();
+        features = gson.fromJson(result, JSON_Features.class);
+
+        ArrayList<QuakeFlavor> quakeFlavor = QuakeUtils.extractEarthquakes(features.getFeatures());
+        quakeAdapter = new QuakeAdapter(_activity, quakeFlavor);
+
 
         Log.v(TAG, getArguments().getString("JSON_RESULT"));
 
