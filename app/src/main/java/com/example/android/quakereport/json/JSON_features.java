@@ -8,6 +8,16 @@ import java.util.List;
 public class JSON_Features {
 
     private List<FeaturesBean> features;
+    /**
+     * generated : LongInteger
+     * url : String
+     * title : String
+     * api : String
+     * count : Integer
+     * status : Integer
+     */
+
+    private MetadataBean metadata;
 
     public List<FeaturesBean> getFeatures() {
         return features;
@@ -16,6 +26,10 @@ public class JSON_Features {
     public void setFeatures(List<FeaturesBean> features) {
         this.features = features;
     }
+
+    public MetadataBean getMetadata() { return metadata; }
+
+    public void setMetadata(MetadataBean metadata) { this.metadata = metadata; }
 
     public static class FeaturesBean {
         /**
@@ -94,6 +108,45 @@ public class JSON_Features {
             public void setUrl(String url) {
                 this.url = url;
             }
+        }
+    }
+
+    public static class MetadataBean {
+        private String generated;
+        private String url;
+        private String title;
+        private String count;
+
+        public String getGenerated() {
+            return generated;
+        }
+
+        public void setGenerated(String generated) {
+            this.generated = generated;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
         }
     }
 }

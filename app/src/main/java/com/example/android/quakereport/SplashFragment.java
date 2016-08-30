@@ -34,12 +34,12 @@ public class SplashFragment extends Fragment{
     public static final String[] URL_Arr = {URL_PAST_HOUR, URL_PAST_DAY, URL_PAST_WEEK};
 
     public static int readyCount = 0;
-    public static Boolean readyBool = false;
 
     private QuakeActivity _activity;
     private TextView counterTv;
     private ProgressBar progress;
     private Handler handler;
+    private Boolean readyBool = false;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.splash_fragment, container, false);
@@ -72,7 +72,6 @@ public class SplashFragment extends Fragment{
                         }
                     });
                 }
-
             }
 
         };
@@ -92,7 +91,7 @@ public class SplashFragment extends Fragment{
                         bundle.putString(TAG_PAST_Arr[readyCount], result);
                         readyBool = true;
 
-                        _activity.navigateToFragment(MainMenuFragment.class, bundle);
+                        _activity.navigateToFragment(MainMenuFragment.class, bundle, false);
                         Log.i(TAG, "Ready Count: " + readyCount + " / readyBool: " + readyBool);
                     } else {
                         Log.i(TAG, "Ready Count: " + readyCount + " / readyBool: " + readyBool);

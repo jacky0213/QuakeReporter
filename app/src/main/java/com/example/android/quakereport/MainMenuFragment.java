@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.android.quakereport.json.JSON_Features;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -28,15 +28,18 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
     public static final String[] TAG_PAST_Arr = {TAG_PAST_HOUR, TAG_PAST_DAY, TAG_PAST_WEEK};
 
     private QuakeActivity _activity;
+    private View rootView;
+
+    private JSON_Features features;
+    private Gson gson;
     private ArrayList<QuakeFlavor> quakeFlavor;
     private MainMenuAdapter mainMenuAdapter;
     private int menuItemNum = TAG_PAST_Arr.length;
-    private Boolean readyBool = false;
 
     private ProgressBar progress;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.menu_adapter, container, false);
+        rootView = inflater.inflate(R.layout.menu_adapter, container, false);
 
         Log.v(TAG, TAG + " - Fragment switched");
 
@@ -44,16 +47,26 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
         _activity = (QuakeActivity) getActivity();
         progress = (ProgressBar) rootView.findViewById(R.id.progress);
 
-        //init UI
+        //Extract JSON result from GSON
+        gson = new Gson();
+        //Retrieve result from bundle
         quakeFlavor = new ArrayList<QuakeFlavor>();
         for(int i = 0; i < menuItemNum; i++){
-            try {
-                String result = getArguments().getString(TAG_PAST_Arr[i]);
-                extractJSON(result);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            String result = getArguments().getString(TAG_PAST_Arr[i]);
+            setMenuItems(result);
         }
+        return rootView;
+    }
+
+    public void setMenuItems(String result){
+        features = gson.fromJson(result, JSON_Features.class);
+        JSON_Features.MetadataBean metadataRecord = features.getMetadata();
+        String title = metadataRecord.getTitle();
+        long time = Long.parseLong(metadataRecord.getGenerated());
+        int count = Integer.parseInt(metadataRecord.getCount());
+        String url = metadataRecord.getUrl();
+        Log.i(TAG, title + " / " + time + " / " + count + " / " + url);
+        quakeFlavor.add(new QuakeFlavor(title, time, count, url));
 
         //Callback
         mainMenuAdapter = new MainMenuAdapter(_activity, quakeFlavor);
@@ -63,7 +76,6 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
         ListView listView = (ListView) rootView.findViewById(R.id.menuList);
         listView.setAdapter(mainMenuAdapter);
 
-        return rootView;
     }
 
     @Override
@@ -71,25 +83,7 @@ public class MainMenuFragment extends Fragment implements MainMenuAdapter.MainMe
         if(result != null){
             Bundle bundle = new Bundle();
             bundle.putString("JSON_RESULT", result);
-            _activity.navigateToFragment(QuakeFragment.class, bundle);
+            _activity.navigateToFragment(QuakeFragment.class, bundle, false);
         }
     }
-
-    public void extractJSON (String result) throws JSONException {
-        JSONObject reader = new JSONObject(result).getJSONObject("metadata");
-        long time = 0;
-        int count = 0;
-        String title = null;
-
-        title = reader.getString("title");
-        time = reader.getLong("generated");
-        count = reader.getInt("count");
-
-        Log.i(TAG, title + " / " + time + " / " + count);
-        quakeFlavor.add(new QuakeFlavor(title, time, count));
-    }
-
-
-
-
 }

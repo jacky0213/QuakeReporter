@@ -25,6 +25,8 @@ public class QuakeUpdate {
 
     }
 
+
+
     //Interface for pass value to UI
     public interface VolleyCallback{
         void onSuccess(String result) throws JSONException;
@@ -42,7 +44,6 @@ public class QuakeUpdate {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            //Send result to callback function (Good response, statusCode = 200)
                             callback.onSuccess(response.toString());
                             Log.i(TAG , "Content received from server: " + response.toString());
                         } catch (JSONException e) {
@@ -52,13 +53,7 @@ public class QuakeUpdate {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String response = null;
                 try {
-                    //Send result to callback function (Good response, statusCode = 400)
-                    callback.onSuccess(response.toString());
-                    Log.w(TAG , "Content received from server: " + response.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 } catch (NullPointerException e){
                     //Happened at no network connection
                     //Show dialog and ask for network connection

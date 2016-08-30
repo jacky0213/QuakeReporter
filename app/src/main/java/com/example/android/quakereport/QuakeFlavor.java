@@ -13,10 +13,11 @@ public class QuakeFlavor {
     private int recordNum;
 
     //For main menu list view
-    public QuakeFlavor(String topic, long date, int recordNum){
+    public QuakeFlavor(String topic, long date, int recordNum, String url){
         this.topic = topic;
         this.date = date;
         this.recordNum = recordNum;
+        this.url = getURL();
     }
 
     //For json result content

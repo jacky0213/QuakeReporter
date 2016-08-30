@@ -1,12 +1,9 @@
 package com.example.android.quakereport;
 
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.example.android.quakereport.json.JSON_Features;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +33,6 @@ public class QuakeUtils{
             String url = item.getProperties().getUrl();
             Log.i(TAG, "(" + i + ") " + String.valueOf(mag) + " / " + place + " / " + String.valueOf(time) + " / " + url);
             quakeFlavor.add(new QuakeFlavor(mag, place, time, url));
-
         }
 
             /*
@@ -73,41 +69,6 @@ public class QuakeUtils{
             }
             */
 
-        return quakeFlavor;
-    }
-
-    public static ArrayList<QuakeFlavor> extractEarthquakes(String result) throws IOException {
-
-        final ArrayList<QuakeFlavor> quakeFlavor = new ArrayList<>();
-
-        JsonReader reader = new JsonReader(new StringReader(result));
-        long time = 0;
-        int count = 0;
-        String title = null;
-
-        reader.beginObject();
-        while(reader.hasNext()){
-            String name = reader.nextName();
-            if(name.equals("metedata")){
-                while(reader.hasNext()){
-                    if(name.equals("generated")){
-                        time = reader.nextLong();
-                    } else if (name.equals("count")){
-                        count = reader.nextInt();
-                    } else if (name.equals("count")) {
-                        title = reader.nextString();
-                    } else {
-                        reader.skipValue();
-                    }
-                }
-            } else {
-                reader.skipValue();
-            }
-
-        }
-        Log.i(TAG, title + " / " + time + " / " + count);
-
-        reader.endObject();
         return quakeFlavor;
     }
 
